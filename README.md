@@ -66,8 +66,4 @@ The project employs a star schema with one fact table and multiple dimension tab
     ```bash
     $ python etl.py
     ```
-6. Validate tables:
-    - Run `test.ipynb`.
-    - Open Amazon Redshift and use database info to make a connection.
-    - Execute query in `test.ipynb` to check tables.
-7. Delete IAM role and Redshift cluster.
+6. Delete IAM role and Redshift cluster.
