@@ -1,42 +1,43 @@
 import configparser
 import psycopg2
-from sql_queries import copy_table_queries, insert_table_queries
+from sql_queries import create_table_queries, drop_table_queries
 
 
-def load_staging_tables(cur, conn):
+def drop_tables(cur, conn):
     """
-    Iterate over list of load queries. This transfers the data from the S3 
-    buckets to the stage tables via COPY. 
+    Iterate over the list of drop queries. This drops all relevant tables 
+    such that the remaining functions can easily be debugged.
     """
-    for query in copy_table_queries:
+
+    for query in drop_table_queries:
         cur.execute(query)
         conn.commit()
 
 
-def insert_tables(cur, conn):
+def create_tables(cur, conn):
     """
-    Iterates over the list of insert queries. This transfers data from the 
-    staging tables to the final tables.
+    Iterate over the list of create queries. This creates all relevant tables
+    for staging, facts and dimensions.
     """
-    for query in insert_table_queries:
+
+    for query in create_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def main():
     """
-    Read config, establish a connection and call load and insert functions.
+    Read config, establish a connection and call drop and create functions.
     """
 
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 
-    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}"\
-        .format(*config['CLUSTER'].values()))
+    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['CLUSTER'].values()))
     cur = conn.cursor()
-    
-    load_staging_tables(cur, conn)
-    insert_tables(cur, conn)
+
+    drop_tables(cur, conn)
+    create_tables(cur, conn)
 
     conn.close()
 
